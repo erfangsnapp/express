@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  express-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html/src
+      - ./public:/var/www/html/public
+    networks:
+      - express_net
+    depends_on:
+      - db
+  express-phpmyadmin:
+    image: 'phpmyadmin:latest'
+    networks:
+      - express_net
+    environment:
+      MYSQL_ROOT_PASSWORD: adminadmin123
+    ports:
+      - ":8081:80"
+    depends_on:
+      - express-db
+  express-db:
+    image: 'mysql:latest'
+    networks:
+      - express_net
+    volumes:
+      - ./data/db:/var/lib/mysql
+      - ./express.sql:/docker-entrypoint-initdb.d/express.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: adminadmin123
+
+
+networks:
+  express_net:
+    driver: bridge
