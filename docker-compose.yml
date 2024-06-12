@@ -30,7 +30,7 @@ services:
       - express_net
     volumes:
       - ./data/db:/var/lib/mysql
-      - ./express.sql:/docker-entrypoint-initdb.d/express.sql
+      - ./config/express.sql:/docker-entrypoint-initdb.d/express.sql
     environment:
       MYSQL_ROOT_PASSWORD: adminadmin123
 

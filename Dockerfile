@@ -15,8 +15,8 @@ RUN docker-php-ext-install mysqli
 RUN composer install --no-scripts
 
 # Copy the rest of the project files to the working directory
-COPY src/ ./src
-COPY public/ ./public
+COPY src ./src
+COPY public ./public
 
 # Expose port 80 for web traffic
 EXPOSE 80
