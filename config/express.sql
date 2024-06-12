@@ -33,7 +33,9 @@ USE `express`;
 CREATE TABLE `Biker` (
   `id` int NOT NULL,
   `name` varchar(100) NOT NULL,
-  `location` point NOT NULL
+  `latitude` decimal(9,6) NOT NULL,
+  `longitude` decimal(9,6) NOT NULL,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -46,8 +48,10 @@ CREATE TABLE `Trip` (
   `id` int NOT NULL,
   `vendor_id` int NOT NULL,
   `biker_id` int DEFAULT NULL,
-  `origin` point NOT NULL,
-  `destination` point NOT NULL,
+  `origin_latitude` decimal(9,6) NOT NULL,
+  `origin_longitude` decimal(9,6) NOT NULL,
+  `destination_latitude` decimal(9,6) NOT NULL,
+  `destination_longitude` decimal(9,6) NOT NULL,
   `status` enum('requested','assigned','acked','picked','delivered','canceled') NOT NULL DEFAULT 'requested',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -61,7 +65,8 @@ CREATE TABLE `Trip` (
 CREATE TABLE `Vendor` (
   `id` int NOT NULL,
   `name` varchar(100) NOT NULL,
-  `location` point NOT NULL
+  `latitude` decimal(9,6) NOT NULL,
+  `longitude` decimal(9,6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -72,8 +77,7 @@ CREATE TABLE `Vendor` (
 -- Indexes for table `Biker`
 --
 ALTER TABLE `Biker`
-  ADD PRIMARY KEY (`id`),
-  ADD SPATIAL KEY `location` (`location`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `Trip`
@@ -81,16 +85,13 @@ ALTER TABLE `Biker`
 ALTER TABLE `Trip`
   ADD PRIMARY KEY (`id`),
   ADD KEY `vendor_id` (`vendor_id`),
-  ADD KEY `biker_id` (`biker_id`),
-  ADD SPATIAL KEY `origin` (`origin`),
-  ADD SPATIAL KEY `destination` (`destination`);
+  ADD KEY `biker_id` (`biker_id`);
 
 --
 -- Indexes for table `Vendor`
 --
 ALTER TABLE `Vendor`
-  ADD PRIMARY KEY (`id`),
-  ADD SPATIAL KEY `location` (`location`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
