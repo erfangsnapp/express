@@ -269,6 +269,110 @@ paths:
                     examples:
                       [ Invalid Status ]
 
+  /biker/{bikerId}:
+    get:
+      tags:
+        - biker
+      summary: Getting details of a biker
+      description: Retrieve a biker
+      parameters:
+          - name: bikerId
+            in: path
+            description: ID of biker to return
+            required: true
+            schema:
+                type: integer
+                format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Biker'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Invalid ID supplied]
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Not Found]
+
+
+
+
+    put:
+      tags:
+        - biker
+      summary: updating location of a biker
+      parameters:
+        - name: bikerId
+          in: path
+          description: ID of biker to update location
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Change location of a biker
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  $ref: '#/components/schemas/Location'
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Biker'
+        '400':
+          description: Invalid Input
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+              examples:
+                InvalidInput:
+                  value:
+                    message: "Invalid Input"
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples:
+                      [ Forbidden ]
+        '404':
+          description: Biker Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples:
+                      [ Biker Not Found ]
 
 
 components:
@@ -315,4 +419,6 @@ components:
           type: integer
           format: int64
           examples: [198772]
+        location:
+          $ref: '#/components/schemas/Location'
 
