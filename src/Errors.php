@@ -3,7 +3,7 @@ namespace App;
 
 class Errors{
 
-    public static function InvalidInput(string $message):void{
+    public static function InvalidInput(string $message="Invalid Input"):void{
         header('Content-type: application/json');
         http_response_code(400);
         $response = [
@@ -12,7 +12,7 @@ class Errors{
         echo json_encode($response);
         die();
     }
-    public static function Unauthorized(string $message):void{
+    public static function Unauthorized(string $message="Unauthorized"):void{
         header('Content-type: application/json');
         http_response_code(401);
         $response = [
@@ -21,7 +21,7 @@ class Errors{
         echo json_encode($response);
         die();
     }
-    public static function Forbidden(string $message):void{
+    public static function Forbidden(string $message="Forbidden"):void{
         header('Content-type: application/json');
         http_response_code(403);
         $response = [
@@ -30,7 +30,7 @@ class Errors{
         echo json_encode($response);
         die();
     }
-    public static function NotFound(string $message):void{
+    public static function NotFound(string $message="Not Found"):void{
         header('Content-type: application/json');
         http_response_code(404);
         $response = [
@@ -39,7 +39,7 @@ class Errors{
         echo json_encode($response);
         die();
     }
-    public static function Conflict(string $message):void{
+    public static function Conflict(string $message="Conflict"):void{
         header('Content-type: application/json');
         http_response_code(409);
         $response = [
@@ -48,7 +48,7 @@ class Errors{
         echo json_encode($response);
         die();
     }
-    public static function ServerError(string $message):void{
+    public static function ServerError(string $message="Server Error"):void{
         header('Content-type: application/json');
         http_response_code(500);
         $response = [
@@ -57,5 +57,4 @@ class Errors{
         echo json_encode($response);
         die();
     }
-    
 }
