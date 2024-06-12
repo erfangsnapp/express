@@ -12,4 +12,4 @@ phpmyadmin will be running on port 8081
 
 ### Documentation
 
-you can render ```config/vX.yaml``` as a OpenAPI 3 specification (e.g. with swaggerUI) 
+you can render ```docs/vX.yaml``` as a OpenAPI 3 specification (e.g. with swaggerUI) 
