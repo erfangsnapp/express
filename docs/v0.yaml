@@ -1,0 +1,420 @@
+openapi: 3.1.0
+info:
+  title: Express service API
+  description: Express service for validating and changing status of the trips
+  version: 0.0.9
+servers:
+  - url: https://localhost:8080/api/v0
+tags:
+  - name: trip
+    description: Assigning and modifying trips
+paths:
+  /trip/{tripId}:
+    get:
+      tags:
+        - trip
+      summary: Getting details of a trip
+      description: Retrieve a trip
+      parameters:
+        - name: tripId
+          in: path
+          description: ID of trip to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          description: Invalid ID supplied
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Invalid ID supplied]
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Not Found]
+
+    post:
+      tags:
+        - trip
+      summary: creating a trip
+      description: Add a new trip in express service
+      requestBody:
+        description: Add a new trip in express service
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vendor_id:
+                  type: integer
+                  format: int64
+                  description: Vendor id
+                origin:
+                  $ref: '#/components/schemas/Location'
+                destination:
+                  $ref: '#/components/schemas/Location'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: Trip id
+                    examples: [145039502634]
+                  status:
+                    type: string
+                    examples: [requested]
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Invalid Input]
+
+  /trip/{tripId}/assign:
+    post:
+      tags:
+        - trip
+      summary: Assigning a biker to a trip
+      description: this will change status of the trip to assigned and set the biker for the trip.
+      parameters:
+        - name: tripId
+          in: path
+          description: ID of trip to assign
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Assign a biker to a trip
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                biker_id:
+                  type: integer
+                  format: int64
+                  description: Biker id
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    id:
+                        type: integer
+                        format: int64
+                        description: Trip id
+                        examples: [145039502634]
+                    status:
+                        type: string
+                        examples: [assigned]
+        '400':
+          description: Invalid Input
+          content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      examples: [Invalid Input]
+        '404':
+          description: Trip/Biker Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                  examples:
+                    Trip:
+                      message: [Trip Not Found]
+                    Biker:
+                      message: [Biker Not Found]
+        '409':
+          description: Trip Already assigned
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Trip Already Assigned]
+
+  /trip/{tripId}/status}:
+    put:
+      tags:
+        - trip
+      summary: changing status of a trip
+      parameters:
+        - name: tripId
+          in: path
+          description: ID of trip to assign
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Change status of a trip
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  description: Status of the trip
+                  examples: [picked]
+                  enum:
+                    - requested
+                    - assigned
+                    - acked
+                    - picked
+                    - delivered
+                    - canceled
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    description: Trip id
+                    examples: [ 145039502634 ]
+                  status:
+                    type: string
+                    examples: [picked]
+        '400':
+          description: Invalid Input
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples:
+                      [ Invalid Input ]
+        '404':
+          description: Trip Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples:
+                      [ Trip Not Found ]
+        '409':
+            description: Invalid Status (backward status setting)
+            content:
+                application/json:
+                schema:
+                    properties:
+                    message:
+                        type: string
+                        examples:
+                          [ Invalid Status ]
+
+  /pet/{petId}:
+    get:
+      tags:
+        - trip
+      summary: Find pet by ID
+      description: Returns a single pet
+      operationId: getPetById
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Pet not found
+    post:
+      tags:
+        - trip
+      summary: Updates a pet in the store with form data
+      description: ''
+      operationId: updatePetWithForm
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet that needs to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: name
+          in: query
+          description: Name of pet that needs to be updated
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Status of pet that needs to be updated
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Invalid input
+    delete:
+      tags:
+        - trip
+      summary: Deletes a pet
+      description: delete a pet
+      operationId: deletePet
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: false
+          schema:
+            type: string
+        - name: petId
+          in: path
+          description: Pet id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '400':
+          description: Invalid pet value
+  /pet/{petId}/uploadImage:
+    post:
+      tags:
+        - trip
+      summary: uploads an image
+      description: ''
+      operationId: uploadFile
+      parameters:
+        - name: petId
+          in: path
+          description: ID of pet to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: additionalMetadata
+          in: query
+          description: Additional Metadata
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: successful operation
+
+components:
+  schemas:
+    Location:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: float
+          examples: [37.7749]
+        longitude:
+          type: number
+          format: float
+          examples: [-122.4194]
+    Trip:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          examples: [13592966]
+        biker_id:
+          $ref: '#/components/schemas/Biker'
+        status:
+          type: string
+          description: Trip status
+          examples: [assigned]
+          enum:
+            - requested
+            - assigned
+            - acked
+            - picked
+            - delivered
+            - canceled
+        origin:
+          $ref: '#/components/schemas/Location'
+        destination:
+          $ref: '#/components/schemas/Location'
+    Biker:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          examples: [198772]
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+          examples: [437 Tehran]
+        city:
+          type: string
+          examples: [Palo Alto]
+        state:
+          type: string
+          examples: [CA]
+        zip:
+          type: string
+          examples: ['94301']
+
