@@ -1,11 +1,8 @@
 <?php
-
- 
-
-use Application; 
+namespace App;
 
 class Field{
-    private $name; 
+    private string $name;
     private $data;
     private $model; 
     private array $config;
@@ -26,7 +23,7 @@ class Field{
             $this->$key = $value;
         }
     }
-    public function validate(){
+    public function validate():void{
         if($this->required && $this->data == NULL)
             throw new \Exception("Field {$this->name} is required");
         if($this->type == 'password'){

@@ -10,6 +10,7 @@ COPY composer.json composer.lock ./
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+RUN docker-php-ext-install mysqli
 # Install project dependencies
 RUN composer install --no-scripts
 
@@ -19,8 +20,6 @@ COPY public/ ./public
 
 # Expose port 80 for web traffic
 EXPOSE 80
-
-RUN docker-php-ext-install mysqli
 
 # Start the PHP built-in web server
 CMD ["php", "-S", "0.0.0.0:80", "-t", "public/"]

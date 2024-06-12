@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  express-server:
+  server:
     build:
       context: .
       dockerfile: Dockerfile
@@ -14,7 +14,7 @@ services:
       - express_net
     depends_on:
       - db
-  express-phpmyadmin:
+  phpmyadmin:
     image: 'phpmyadmin:latest'
     networks:
       - express_net
@@ -23,8 +23,8 @@ services:
     ports:
       - ":8081:80"
     depends_on:
-      - express-db
-  express-db:
+      - db
+  db:
     image: 'mysql:latest'
     networks:
       - express_net

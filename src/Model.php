@@ -1,25 +1,21 @@
 <?php
-
-
-
-use Application; 
-use Field;
+namespace App;
 
 class Model{ 
     protected $id;
 
-    public static $fieldRules;
+    public static array $fieldRules;
 
     public function __construct($data = []){
         if($data != [])
             $this->insertData($data, static::$fieldRules); 
     }
     
-    private static function get_model_name(){
+    private static function get_model_name():string{
         $str = get_called_class();
         return substr($str, strrpos($str, '\\') + 1);
     }
-    public static function all(){
+    public static function all():array{
         $data = Application::$app->db->all(self::get_model_name());
         $result = [];
         foreach ($data as $object){
@@ -29,7 +25,7 @@ class Model{
         }
         return $result; 
     }
-    public static function getById($id){
+    public static function getById($id):?Model{
         $data = Application::$app->db->getById(self::get_model_name(), $id);
         if(empty($data)){
             return null;
@@ -38,7 +34,7 @@ class Model{
         $entry->loadData($data, static::$fieldRules); 
         return $entry; 
     }
-    public static function get($arr, $multiple_result=false){
+    public static function get($arr, $multiple_result=false):?array{
         $data = Application::$app->db->get(self::get_model_name(), $arr, $multiple_result);
         if(empty($data)){
             return null;
@@ -46,7 +42,7 @@ class Model{
         if(!$multiple_result){
             $entry = new static(); 
             $entry->loadData($data, static::$fieldRules); 
-            return $entry;
+            return [$entry];
         }
         $result = []; 
         foreach ($data as $object){
@@ -59,13 +55,13 @@ class Model{
     public function read($key){
         return $this->$key;
     }
-    public function save(){
+    public function save():void{
         Application::$app->db->save(self::get_model_name(), $this->exportData());
     }
-    public function create(){
+    public function create():void{
         Application::$app->db->create(self::get_model_name(), $this->exportData());
     }
-    public function loadData($data, $rules){
+    public function loadData($data, $rules):void{
         foreach ($data as $key => $value) {
             if($key != 'id'){
                 $field = new Field($rules[$key], $value, self::get_model_name(), $key);
@@ -74,7 +70,7 @@ class Model{
             $this->$key = $value;
         }
     }
-    public function insertData($data, $rules){
+    public function insertData($data, $rules):void{
         foreach ($data as $key => $value) {
             if($key != 'id'){
                 $field = new Field($rules[$key], $value, self::get_model_name(), $key);
@@ -86,7 +82,7 @@ class Model{
                 $this->$key = $value;
         }
     }
-    public function exportData(){
+    public function exportData():?array{
         return get_object_vars($this);
     }
 }

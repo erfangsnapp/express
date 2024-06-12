@@ -1,14 +1,13 @@
 <?php
-namespace ORM;
+namespace App\ORM;
 class JsonDB extends Database{
 
-    public static function db_path($table){
+    public static function db_path($table):string{
         return __DIR__ . "/../db/" . $table . ".json";
     }
     public function all($table){
         $f = file_get_contents(self::db_path($table));
-        $result = json_decode($f, true);
-        return $result;       
+        return json_decode($f, true);
     }
     public function getById($table, $id){
         $all = self::all($table);
