@@ -1,9 +1,9 @@
 <?php
 
-namespace ORM;
+namespace App\ORM;
 
 abstract class Database{
-    protected $db_name; 
+    protected string $db_name;
     abstract public function save($table, $data); 
     abstract public function get($table, $arr, $multiple_result=false);
     abstract public function getById($table, $id);

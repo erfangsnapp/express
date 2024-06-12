@@ -2,7 +2,7 @@
     "name": "sf/express",
     "autoload": {
         "psr-4": {
-            "\\": "src/"
+            "App\\": "src/"
         }
     },
     "authors": [
@@ -10,5 +10,7 @@
             "name": "ErfanGooneh"
         }
     ],
-    "require": {}
+    "require": {
+      "ext-mysqli": "*"
+    }
 }
