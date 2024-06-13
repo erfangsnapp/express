@@ -11,6 +11,8 @@ class Field{
     private int $min_length=0; 
     private $min;
     private $max;
+
+    private array $values;
     private bool $required=false;
     private bool $unique=false;
 
@@ -63,6 +65,11 @@ class Field{
                 throw new \Exception("Field {$this->name} is too small", 400);
             if ($this->max && $this->data > $this->max)
                 throw new \Exception("Field {$this->name} is too big", 400);
+        }
+        if($this->type == 'enum'){
+            if(!in_array($this->data, $this->values)){
+                throw new \Exception("enum value not exists", 400);
+            }
         }
     }
 }
