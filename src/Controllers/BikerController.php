@@ -2,7 +2,9 @@
 namespace App\Controllers;
 use App\Response;
 use App\Models\Biker;
+use App\Field;
 use App\Errors;
+use App\Services\BikerService;
 class BikerController{
     public function index(array $params):void{
         if ($_SERVER['REQUEST_METHOD'] === 'GET'){
@@ -12,22 +14,61 @@ class BikerController{
         }
     }
     public function get(array $params){
-        $biker = new Biker();
-        $res = $biker->getById($params['bikerId']);
-        if ($res == null) {
-            Errors::NotFound();
+        try {
+            $biker_id = $params['bikerId'];
+            $id_field = new Field(Biker::$fieldRules['id'], $biker_id, Biker::class, 'id');
+            $id_field->validate();
         }
-        Response::JsonResponse($res->exportData());
+        catch (\Exception $e) {
+            Errors::InvalidInput();
+        }
+
+        try {
+            $res = BikerService::getBiker($biker_id);
+            Response::JsonResponse($res);
+        }
+        catch (\Exception $e) {
+            if ($e->getCode() == 404) {
+                Errors::NotFound();
+            }
+            else
+                Errors::ServerError();
+        }
     }
     public function put(array $params){
-        $biker = new Biker();
-        $res = $biker->getById($params['bikerId']);
-        if ($res == null) {
-            Errors::NotFound();
+        try {
+            $biker_id = $params['bikerId'];
+            $id_field = new Field(Biker::$fieldRules['id'], $biker_id, Biker::class, 'id');
+            $id_field->validate();
         }
-        $data = json_decode(file_get_contents('php://input'), true);
-        $res->insertData($data, Biker::$fieldRules);
-        $res->save();
-        Response::JsonResponse($res->exportData());
+        catch (\Exception $e) {
+            Errors::InvalidInput();
+        }
+
+        try{
+            $data = json_decode(file_get_contents('php://input'), true);
+            $latitude = $data['latitude'];
+            $longitude = $data['longitude'];
+            $latitude_field = new Field(Biker::$fieldRules['latitude'], $latitude, Biker::class, 'latitude');
+            $longitude_field = new Field(Biker::$fieldRules['longitude'], $longitude, Biker::class, 'longitude');
+            $latitude_field->validate();
+            $longitude_field->validate();
+        }
+        catch (\Exception $e) {
+            Errors::InvalidInput();
+        }
+        try{
+            $res = BikerService::UpdateBikerLocation($biker_id, $latitude, $longitude);
+        }
+        catch (\Exception $e) {
+            if($e->getCode() == 404){
+                Errors::NotFound();
+            }
+            else if ($e->getCode() == 400)
+                Errors::InvalidInput();
+            else if($e->getCode() == 500)
+                Errors::ServerError();
+        }
+        Response::JsonResponse($res);
     }
 }
