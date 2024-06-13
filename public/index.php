@@ -1,9 +1,8 @@
 <?php
 
 require '../vendor/autoload.php';
-//use Controllers\AuthController;
-//use Controllers\HomeController;
 use App\Controllers\HealthController;
+use App\Controllers\BikerController;
 use App\Application;
 $config = [
     'db' => [
@@ -20,6 +19,7 @@ $router = $app->router ;
 $router->setRoute('/health',HealthController::class, 'index');
 /////////////////
 
+$router->setRoute('/api/v1/biker/{bikerId}', BikerController::class, 'index');
 
 
 $router->run();
