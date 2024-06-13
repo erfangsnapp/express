@@ -24,4 +24,19 @@ class Trip extends Model{
         'status' => ['type' => 'enum', 'values'=>['requested','assigned','acked','picked','delivered','canceled'], 'required' => false],
         'created_at' => ['type' => 'string', 'min_length' => 1, 'max_length' => 255, 'required' => false]
     ];
+    public function get_status():string{
+        return $this->status;
+    }
+    public function get_origin():array{
+        return ['latitude' => $this->origin_latitude, 'longitude' => $this->origin_longitude];
+    }
+    public function get_destination():array{
+        return ['latitude' => $this->destination_latitude, 'longitude' => $this->destination_longitude];
+    }
+    public function get_vendor_id():int{
+        return $this->vendor_id;
+    }
+    public function get_biker_id():?int{
+        return $this->biker_id;
+    }
 };

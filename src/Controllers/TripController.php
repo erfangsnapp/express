@@ -58,14 +58,60 @@ class TripController{
                 }
             }
     }
-    public function assign():void{
+    public function assign($params):void{
         if($_SERVER['REQUEST_METHOD'] == 'POST'){
-
+            try{
+                $data = json_decode(file_get_contents('php://input'), true);
+                $trip_id = $params['tripId'];
+                $biker_id = $data['biker_id'];
+                $trip_id_field = new Field(Trip::$fieldRules['id'], $trip_id, Trip::class, 'id');
+                $biker_id_field = new Field(Trip::$fieldRules['biker_id'], $biker_id, Trip::class, 'biker_id');
+                $trip_id_field->validate();
+                $biker_id_field->validate();
+            }
+            catch(\Throwable $e){
+                Errors::InvalidInput($e->getMessage());
+            }
+            try{
+                $res = TripService::assignTrip($trip_id, $biker_id);
+                Response::JsonResponse($res);
+            }
+            catch(\Exception $e){
+                if($e->getCode() == 400){
+                    Errors::InvalidInput($e->getMessage());
+                }
+                else{
+                    Errors::ServerError($e->getMessage());
+                }
+            }
         }
     }
-    public function status():void{
+    public function status($params):void{
         if($_SERVER['REQUEST_METHOD'] == 'PUT'){
-
+            try{
+                $data = json_decode(file_get_contents('php://input'), true);
+                $trip_id = $params['tripId'];
+                $status = $data['status'];
+                $trip_id_field = new Field(Trip::$fieldRules['id'], $trip_id, Trip::class, 'id');
+                $status_field = new Field(Trip::$fieldRules['status'], $status, Trip::class, 'status');
+                $trip_id_field->validate();
+                $status_field->validate();
+            }
+            catch(\Throwable $e){
+                Errors::InvalidInput($e->getMessage());
+            }
+            try{
+                $res = TripService::updateStatus($trip_id, $status);
+                Response::JsonResponse($res);
+            }
+            catch(\Exception $e){
+                if($e->getCode() == 400){
+                    Errors::InvalidInput($e->getMessage());
+                }
+                else{
+                    Errors::ServerError($e->getMessage());
+                }
+            }
         }
     }
 };
