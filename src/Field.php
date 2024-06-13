@@ -4,6 +4,8 @@ namespace App;
 class Field{
     private string $name;
     private $data;
+
+    private bool $nullable;
     private $model; 
     private array $config;
     private string $type;
@@ -11,7 +13,6 @@ class Field{
     private int $min_length=0; 
     private $min;
     private $max;
-
     private array $values;
     private bool $required=false;
     private bool $unique=false;
@@ -31,6 +32,8 @@ class Field{
         }
     }
     public function validate_type(): void {
+        if ($this->required == false && $this->data == NULL)
+            return;
         if ($this->type === 'integer' && (!is_numeric($this->data) || intval($this->data) != $this->data)) {
             throw new \Exception("Field {$this->name} is not an integer", 400);
         }
