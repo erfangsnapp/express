@@ -96,7 +96,8 @@ class MySQL extends Database{
         }
     }
 
-    public function create($table, $data):bool{
+    public function create($table, $data):int{
+        unset($data['id']);
         foreach ($data as $key => $value) {
             if (is_bool($value)) {
                 $data[$key] = $value ? 1 : 0;
@@ -106,9 +107,9 @@ class MySQL extends Database{
         $values = "'" . implode("', '", array_values($data)) . "'";
         $sql = "INSERT INTO $table ($columns) VALUES ($values)";
         if ($this->conn->query($sql) === TRUE) {
-            return true;
+            return (int) $this->conn->insert_id;
         } else {
-            return false;
+            throw new \Exception("Error: " . $sql . "<br>" . $this->conn->error);
         }  
     }
 

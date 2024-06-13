@@ -59,7 +59,8 @@ class Model{
         Application::$app->db->save(self::get_model_name(), $this->exportData());
     }
     public function create():void{
-        Application::$app->db->create(self::get_model_name(), $this->exportData());
+        $id = Application::$app->db->create(self::get_model_name(), $this->exportData());
+        $this->id = $id; 
     }
     public function loadData($data, $rules):void{
         foreach ($data as $key => $value) {
