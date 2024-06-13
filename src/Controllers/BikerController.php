@@ -20,7 +20,7 @@ class BikerController{
             $id_field->validate();
         }
         catch (\Exception $e) {
-            Errors::InvalidInput();
+            Errors::InvalidInput($e->getMessage());
         }
 
         try {
@@ -29,10 +29,10 @@ class BikerController{
         }
         catch (\Exception $e) {
             if ($e->getCode() == 404) {
-                Errors::NotFound();
+                Errors::NotFound($e->getMessage());
             }
             else
-                Errors::ServerError();
+                Errors::ServerError($e->getMessage());
         }
     }
     public function put(array $params){
@@ -42,7 +42,7 @@ class BikerController{
             $id_field->validate();
         }
         catch (\Exception $e) {
-            Errors::InvalidInput();
+            Errors::InvalidInput($e->getMessage());
         }
 
         try{
@@ -55,19 +55,19 @@ class BikerController{
             $longitude_field->validate();
         }
         catch (\Exception $e) {
-            Errors::InvalidInput();
+            Errors::InvalidInput($e->getMessage());
         }
         try{
             $res = BikerService::UpdateBikerLocation($biker_id, $latitude, $longitude);
         }
         catch (\Exception $e) {
             if($e->getCode() == 404){
-                Errors::NotFound();
+                Errors::NotFound($e->getMessage());
             }
             else if ($e->getCode() == 400)
-                Errors::InvalidInput();
+                Errors::InvalidInput($e->getMessage());
             else if($e->getCode() == 500)
-                Errors::ServerError();
+                Errors::ServerError($e->getMessage());
         }
         Response::JsonResponse($res);
     }
