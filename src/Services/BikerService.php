@@ -32,4 +32,21 @@ class BikerService{
         }
         return $biker->exportData();
     }
+
+    public static function createBiker($name, $latitude, $longitude):array{
+        $biker = new Biker();
+        try{
+            $biker->insertData(['name' => $name, 'latitude' => $latitude, 'longitude' => $longitude], Biker::$fieldRules);
+        }
+        catch (\Exception $e) {
+            throw new \Exception($e->getMessage(), 400);
+        }
+        try {
+            $biker->create();
+        }
+        catch (\Exception $e) {
+            throw new \Exception("Failed to create biker", 500);
+        }
+        return $biker->exportData();
+    }
 }

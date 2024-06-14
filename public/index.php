@@ -28,6 +28,7 @@ $router->setRoute('/health',HealthController::class, 'index');
 /////////////////
 
 $router->setRoute('/api/v1/biker/{bikerId}', BikerController::class, 'index');
+$router->setRoute('/api/v1/biker', BikerController::class, 'create');
 $router->setRoute('/api/v1/trip/{tripId}', TripController::class, 'get');
 $router->setRoute('/api/v1/trip', TripController::class, 'create');
 $router->setRoute('/api/v1/trip/{tripId}/assign', TripController::class, 'assign');
