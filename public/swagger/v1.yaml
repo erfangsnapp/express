@@ -406,24 +406,24 @@ paths:
         requestBody:
             description: Add a new biker in the express service
             content:
-            application/json:
-                schema:
-                type: object
-                properties:
-                    name:
-                      type: string
-                      description: Name of the biker
-                      examples: [Hamed Karimi]
-                    latitude:
-                      type: number
-                      format: float
-                      description: Latitude of the biker
-                      examples: [26.312049]
-                    longitude:
-                      type: number
-                      format: float
-                      description: Longitude of the biker
-                      examples: [-36.312049]
+              application/json:
+                  schema:
+                  type: object
+                  properties:
+                      name:
+                        type: string
+                        description: Name of the biker
+                        examples: [Hamed Karimi]
+                      latitude:
+                        type: number
+                        format: float
+                        description: Latitude of the biker
+                        examples: [26.312049]
+                      longitude:
+                        type: number
+                        format: float
+                        description: Longitude of the biker
+                        examples: [-36.312049]
             required: true
         responses:
             '201':
@@ -438,18 +438,18 @@ paths:
                   application/json:
                     schema:
                         properties:
-                        message:
-                            type: string
-                            examples: [Invalid Input]
+                          message:
+                              type: string
+                              examples: [Invalid Input]
             '500':
               description: Internal Server Error
               content:
                   application/json:
                     schema:
                         properties:
-                        message:
-                            type: string
-                            examples: [ Server Error ]
+                          message:
+                              type: string
+                              examples: [ Server Error ]
   /vendor/{vendorId}:
     get:
       tags:

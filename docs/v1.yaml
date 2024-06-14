@@ -75,21 +75,21 @@ paths:
                   format: int64
                   description: Vendor id
                 origin_latitude:
-                    type: number
-                    format: float
-                    description: Origin latitude
+                  type: number
+                  format: float
+                  description: Origin latitude
                 origin_longitude:
-                    type: number
-                    format: float
-                    description: Origin longitude
+                  type: number
+                  format: float
+                  description: Origin longitude
                 destination_latitude:
-                    type: number
-                    format: float
-                    description: Destination latitude
+                  type: number
+                  format: float
+                  description: Destination latitude
                 destination_longitude:
-                    type: number
-                    format: float
-                    description: Destination longitude
+                  type: number
+                  format: float
+                  description: Destination longitude
         required: true
       responses:
         '201':
@@ -299,13 +299,13 @@ paths:
       summary: Getting details of a biker
       description: Retrieve a biker
       parameters:
-          - name: bikerId
-            in: path
-            description: ID of biker to return
-            required: true
-            schema:
-                type: integer
-                format: int64
+        - name: bikerId
+          in: path
+          description: ID of biker to return
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: Successful operation
@@ -362,14 +362,14 @@ paths:
             schema:
               type: object
               properties:
-                  latitude:
-                    type: number
-                    format: float
-                    description: Latitude of the biker
-                  longitude:
-                    type: number
-                    format: float
-                    description: Longitude of the biker
+                latitude:
+                  type: number
+                  format: float
+                  description: Latitude of the biker
+                longitude:
+                  type: number
+                  format: float
+                  description: Longitude of the biker
         required: true
       responses:
         '200':
@@ -399,57 +399,57 @@ paths:
                       [ Biker not found ]
   /biker:
     post:
-        tags:
-            - biker
-        summary: Creating a biker
+      tags:
+        - biker
+      summary: Creating a biker
+      description: Add a new biker in the express service
+      requestBody:
         description: Add a new biker in the express service
-        requestBody:
-            description: Add a new biker in the express service
-            content:
+        content:
+          application/json:
+            schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the biker
+                examples: [Hamed Karimi]
+              latitude:
+                type: number
+                format: float
+                description: Latitude of the biker
+                examples: [26.312049]
+              longitude:
+                type: number
+                format: float
+                description: Longitude of the biker
+                examples: [-36.312049]
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
             application/json:
-                schema:
-                type: object
+              schema:
+                $ref: '#/components/schemas/Biker'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
                 properties:
-                    name:
-                      type: string
-                      description: Name of the biker
-                      examples: [Hamed Karimi]
-                    latitude:
-                      type: number
-                      format: float
-                      description: Latitude of the biker
-                      examples: [26.312049]
-                    longitude:
-                      type: number
-                      format: float
-                      description: Longitude of the biker
-                      examples: [-36.312049]
-            required: true
-        responses:
-            '201':
-              description: Created
-              content:
-                  application/json:
-                    schema:
-                        $ref: '#/components/schemas/Biker'
-            '400':
-              description: Invalid input
-              content:
-                  application/json:
-                    schema:
-                        properties:
-                        message:
-                            type: string
-                            examples: [Invalid Input]
-            '500':
-              description: Internal Server Error
-              content:
-                  application/json:
-                    schema:
-                        properties:
-                        message:
-                            type: string
-                            examples: [ Server Error ]
+                  message:
+                    type: string
+                    examples: [Invalid Input]
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [ Server Error ]
   /vendor/{vendorId}:
     get:
       tags:
@@ -505,27 +505,27 @@ paths:
       summary: Creating a vendor
       description: Add a new vendor in the express service
       requestBody:
-          description: Add a new vendor in the express service
-          content:
-            application/json:
-                schema:
-                type: object
-                properties:
-                    name:
-                      type: string
-                      description: Name of the vendor
-                      examples: [Atawich-Abazar]
-                    latitude:
-                      type: number
-                      format: float
-                      description: Latitude of the vendor
-                      examples: [26.312049]
-                    longitude:
-                      type: number
-                      format: float
-                      description: Longitude of the vendor
-                      examples: [-36.312049]
-          required: true
+        description: Add a new vendor in the express service
+        content:
+          application/json:
+            schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the vendor
+                examples: [Atawich-Abazar]
+              latitude:
+                type: number
+                format: float
+                description: Latitude of the vendor
+                examples: [26.312049]
+              longitude:
+                type: number
+                format: float
+                description: Longitude of the vendor
+                examples: [-36.312049]
+        required: true
       responses:
         '201':
           description: Created
