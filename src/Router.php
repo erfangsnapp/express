@@ -1,6 +1,6 @@
 <?php
 namespace App;
-
+use App\Errors;
 class Router{
     protected array $routes = [];
     public function setRoute($route, $controller, $action):void{
@@ -18,7 +18,12 @@ class Router{
                 $action = $data['action'];
                 // Extract named parameters
                 $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
-                $controller->$action($params);
+                try{
+                    $controller->$action($params);
+                }
+                catch (\Throwable $e){
+                    Errors::ServerError();
+                }
                 return;
             }
         }
