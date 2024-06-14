@@ -8,8 +8,15 @@ use App\Field;
 class TripController{
     public function get($params):void{
         if($_SERVER['REQUEST_METHOD'] == 'GET') {
-            try {
+            try{
                 $trip_id = $params['tripId'];
+                $trip_field = new Field(Trip::$fieldRules['id'], $trip_id, Trip::class, 'id');
+                $trip_field->validate();
+            }
+            catch (\Throwable $e) {
+                Errors::InvalidInput($e->getMessage());
+            }
+            try {
                 $res = TripService::getTrip($trip_id);
                 Response::JsonResponse($res);
             } catch (\Exception $e) {
@@ -41,7 +48,7 @@ class TripController{
                     $destination_latitude_field->validate();
                     $destination_longitude_field->validate();
                 }
-                catch(\Exception $e){
+                catch(\Throwable $e){
                     Errors::InvalidInput($e->getMessage());
                 }
                 try{
