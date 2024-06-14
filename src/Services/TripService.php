@@ -50,14 +50,14 @@ class TripService{
             throw new \Exception("Biker not found", 404);
         }
         if ($trip->get_status() != 'requested') {
-            throw new \Exception("Trip is not in requested status", 400);
+            throw new \Exception("Trip is not in requested status", 409);
         }
         $fromLat = $biker->get_location()['latitude'];
         $fromLong = $biker->get_location()['longitude'];
         $toLat = $trip->get_origin()['latitude'];
         $toLong = $trip->get_origin()['longitude'];
         if (Location::Distance($fromLat, $fromLong, $toLat, $toLong) > 5000) {
-            throw new \Exception("Biker is too far", 400);
+            throw new \Exception("Biker is too far", 409);
         }
         $trip->insertData([
             'biker_id' => $biker_id,
@@ -80,18 +80,18 @@ class TripService{
         }
         $priority = Trip::$fieldRules['status']['values'];
         if (array_search($status, $priority) < array_search($trip->get_status(), $priority)) {
-            throw new \Exception("Invalid status", 400);
+            throw new \Exception("Already passed", 409);
         }
         if ($trip->get_biker_id() == null) {
-            throw new \Exception("Biker is not assigned", 400);
+            throw new \Exception("Biker is not assigned", 409);
         }
         $biker = new Biker();
         $biker = $biker->getById($trip->get_biker_id());
         if ($status == 'picked' && Location::Distance($biker->get_location()['latitude'], $biker->get_location()['longitude'], $trip->get_origin()['latitude'], $trip->get_origin()['longitude']) > 30) {
-            throw new \Exception("Biker is too far from vendor", 400);
+            throw new \Exception("Biker is too far from origin", 409);
         }
         if ($status == 'delivered' && Location::Distance($biker->get_location()['latitude'], $biker->get_location()['longitude'], $trip->get_destination()['latitude'], $trip->get_destination()['longitude']) > 30) {
-            throw new \Exception("Biker is too far from destination", 400);
+            throw new \Exception("Biker is too far from destination", 409);
         }
 
         $trip->insertData([

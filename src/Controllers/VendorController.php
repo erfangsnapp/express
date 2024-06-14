@@ -49,7 +49,7 @@ class VendorController{
             }
             try{
                 $res = VendorService::createVendor($name, $latitude, $longitude);
-                Response::JsonResponse($res);
+                Response::JsonResponse($res, 201);
             }
             catch(\Exception $e){
                 if($e->getCode() == 400){

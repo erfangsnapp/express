@@ -53,7 +53,7 @@ class TripController{
                 }
                 try{
                     $res = TripService::createTrip($vendor_id, $origin_latitude, $origin_longitude, $destination_latitude, $destination_longitude);
-                    Response::JsonResponse($res);
+                    Response::JsonResponse($res, 201);
                 }
                 catch(\Exception $e){
                     if($e->getCode() == 400){
@@ -86,6 +86,9 @@ class TripController{
             catch(\Exception $e){
                 if($e->getCode() == 400){
                     Errors::InvalidInput($e->getMessage());
+                }
+                else if($e->getCode() == 409){
+                    Errors::Conflict($e->getMessage());
                 }
                 else{
                     Errors::ServerError($e->getMessage());
