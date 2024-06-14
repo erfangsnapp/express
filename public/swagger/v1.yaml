@@ -1,0 +1,643 @@
+openapi: 3.1.0
+info:
+  title: Express service API
+  description: Express service for validating and changing status of the trips
+  version: 0.0.9
+servers:
+  - url: https://localhost:8080/api/v1
+tags:
+  - name: trip
+    description: Assigning and modifying trips
+paths:
+  /trip/{tripId}:
+    get:
+      tags:
+        - trip
+      summary: Getting details of a trip
+      description: Retrieve a trip
+      parameters:
+        - name: tripId
+          in: path
+          description: ID of trip to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          description: Invalid Input
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Invalid Input]
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Trip not found]
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Server Error]
+  /trip:
+    post:
+      tags:
+        - trip
+      summary: Creating a trip
+      description: Add a new trip in the express service
+      requestBody:
+        description: Add a new trip in the express service
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vendor_id:
+                  type: integer
+                  format: int64
+                  description: Vendor id
+                origin_latitude:
+                    type: number
+                    format: float
+                    description: Origin latitude
+                origin_longitude:
+                    type: number
+                    format: float
+                    description: Origin longitude
+                destination_latitude:
+                    type: number
+                    format: float
+                    description: Destination latitude
+                destination_longitude:
+                    type: number
+                    format: float
+                    description: Destination longitude
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Invalid Input]
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [ Server Error ]
+
+  /trip/{tripId}/assign:
+    post:
+      tags:
+        - trip
+      summary: Assigning a biker to a trip
+      description: this will change status of the trip to assigned and set the biker for the trip.
+      parameters:
+        - name: tripId
+          in: path
+          description: ID of trip to assign
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Assign a biker to a trip
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                biker_id:
+                  type: integer
+                  format: int64
+                  description: Biker id
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          description: Invalid Input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    examples: [Invalid Input]
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                TripNotFound:
+                  value:
+                    message: "Trip not found"
+                BikerNotFound:
+                  value:
+                    message: "Biker not found"
+        '409':
+          description: Trip Already assigned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              examples:
+                AlreadyAssigned:
+                  value:
+                    message: "Trip is not in requested status"
+                TooFarFromOrigin:
+                  value:
+                    message: "Biker is too far"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [ Server Error ]
+
+  /trip/{tripId}/status:
+    put:
+      tags:
+        - trip
+      summary: changing status of a trip
+      parameters:
+        - name: tripId
+          in: path
+          description: ID of trip to assign
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Change status of a trip
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  description: Status of the trip
+                  examples: [picked]
+                  enum:
+                    - requested
+                    - assigned
+                    - acked
+                    - picked
+                    - delivered
+                    - canceled
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          description: Invalid Input
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Invalid Input]
+
+        '404':
+          description: Trip Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples:
+                      [ Trip not found ]
+        '409':
+          description: Invalid Status
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+              examples:
+                AlreadyPassed:
+                  value:
+                    message: "Already passed"
+                BikerNotAssigned:
+                  value:
+                    message: "Biker is not assigned"
+                TooFarFromOrigin:
+                  value:
+                    message: "Biker is too far from origin"
+                TooFarFromDestination:
+                  value:
+                    message: "Biker is too far from destination"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [ Server Error ]
+
+  /biker/{bikerId}:
+    get:
+      tags:
+        - biker
+      summary: Getting details of a biker
+      description: Retrieve a biker
+      parameters:
+          - name: bikerId
+            in: path
+            description: ID of biker to return
+            required: true
+            schema:
+                type: integer
+                format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Biker'
+        '400':
+          description: Invalid Input
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Invalid Input]
+        '404':
+          description: Biker Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Biker not found]
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [ Server Error ]
+
+
+
+    put:
+      tags:
+        - biker
+      summary: Updating location of a biker
+      parameters:
+        - name: bikerId
+          in: path
+          description: ID of biker to update location
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Change location of a biker
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  latitude:
+                    type: number
+                    format: float
+                    description: Latitude of the biker
+                  longitude:
+                    type: number
+                    format: float
+                    description: Longitude of the biker
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Biker'
+        '400':
+          description: Invalid Input
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Invalid Input]
+        '404':
+          description: Biker Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples:
+                      [ Biker not found ]
+  /biker:
+    post:
+        tags:
+            - biker
+        summary: Creating a biker
+        description: Add a new biker in the express service
+        requestBody:
+            description: Add a new biker in the express service
+            content:
+            application/json:
+                schema:
+                type: object
+                properties:
+                    name:
+                      type: string
+                      description: Name of the biker
+                      examples: [Hamed Karimi]
+                    latitude:
+                      type: number
+                      format: float
+                      description: Latitude of the biker
+                      examples: [26.312049]
+                    longitude:
+                      type: number
+                      format: float
+                      description: Longitude of the biker
+                      examples: [-36.312049]
+            required: true
+        responses:
+            '201':
+              description: Created
+              content:
+                  application/json:
+                    schema:
+                        $ref: '#/components/schemas/Biker'
+            '400':
+              description: Invalid input
+              content:
+                  application/json:
+                    schema:
+                        properties:
+                        message:
+                            type: string
+                            examples: [Invalid Input]
+            '500':
+              description: Internal Server Error
+              content:
+                  application/json:
+                    schema:
+                        properties:
+                        message:
+                            type: string
+                            examples: [ Server Error ]
+  /vendor/{vendorId}:
+    get:
+      tags:
+        - vendor
+      summary: Getting details of a vendor
+      description: Retrieve a vendor
+      parameters:
+        - name: vendorId
+          in: path
+          description: ID of vendor to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vendor'
+        '400':
+          description: Invalid Input
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Invalid Input]
+        '404':
+          description: Vendor Not Found
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Vendor not found]
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [ Server Error ]
+  /vendor:
+    post:
+      tags:
+        - vendor
+      summary: Creating a vendor
+      description: Add a new vendor in the express service
+      requestBody:
+          description: Add a new vendor in the express service
+          content:
+            application/json:
+                schema:
+                type: object
+                properties:
+                    name:
+                      type: string
+                      description: Name of the vendor
+                      examples: [Atawich-Abazar]
+                    latitude:
+                      type: number
+                      format: float
+                      description: Latitude of the vendor
+                      examples: [26.312049]
+                    longitude:
+                      type: number
+                      format: float
+                      description: Longitude of the vendor
+                      examples: [-36.312049]
+          required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vendor'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [Invalid Input]
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                properties:
+                  message:
+                    type: string
+                    examples: [ Server Error ]
+
+components:
+  schemas:
+    Vendor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: int64
+          examples: [ 198772 ]
+        name:
+          type: string
+          examples: [ Atawich-Abazar ]
+        latitude:
+          type: number
+          format: float
+          examples: [ 26.312049 ]
+        longitude:
+          type: number
+          format: float
+          examples: [ -36.312049 ]
+    Trip:
+      type: object
+      properties:
+        id:
+          type: string
+          format: int64
+          examples: [13592966]
+        vendor_id:
+          type: string
+          format: int64
+          examples: [ 94256 ]
+        biker_id:
+          type: string
+          format: int64
+          examples: [ 314214 ]
+        origin_latitude:
+          type: number
+          format: float
+          examples: [26.312049]
+        origin_longitude:
+          type: number
+          format: float
+          examples: [ -36.312049 ]
+        destination_latitude:
+          type: number
+          format: float
+          examples: [ 26.312049 ]
+        destination_longitude:
+          type: number
+          format: float
+          examples: [ -36.312049 ]
+        status:
+          type: string
+          description: Trip status
+          examples: [assigned]
+          enum:
+            - requested
+            - assigned
+            - acked
+            - picked
+            - delivered
+            - canceled
+        created_at:
+          type: string
+          format: date-time
+          examples: [2024-10-10 20:34:19]
+    Biker:
+      type: object
+      properties:
+        id:
+          type: string
+          format: int64
+          examples: [198772]
+        name:
+          type: string
+          examples: [Hamed Karimi]
+        latitude:
+          type: number
+          format: float
+          examples: [ 26.312049 ]
+        longitude:
+          type: number
+          format: float
+          examples: [ -36.312049 ]
+        updated_at:
+          type: string
+          format: date-time
+          examples: [ 2024-10-10 20:34:19 ]
+

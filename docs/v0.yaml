@@ -48,7 +48,7 @@ paths:
                   message:
                     type: string
                     examples: [Not Found]
-
+  /trip:
     post:
       tags:
         - trip
