@@ -408,22 +408,22 @@ paths:
         content:
           application/json:
             schema:
-            type: object
-            properties:
-              name:
-                type: string
-                description: Name of the biker
-                examples: [Hamed Karimi]
-              latitude:
-                type: number
-                format: float
-                description: Latitude of the biker
-                examples: [26.312049]
-              longitude:
-                type: number
-                format: float
-                description: Longitude of the biker
-                examples: [-36.312049]
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the biker
+                  examples: [Hamed Karimi]
+                latitude:
+                  type: number
+                  format: float
+                  description: Latitude of the biker
+                  examples: [26.312049]
+                longitude:
+                  type: number
+                  format: float
+                  description: Longitude of the biker
+                  examples: [-36.312049]
         required: true
       responses:
         '201':
@@ -509,22 +509,22 @@ paths:
         content:
           application/json:
             schema:
-            type: object
-            properties:
-              name:
-                type: string
-                description: Name of the vendor
-                examples: [Atawich-Abazar]
-              latitude:
-                type: number
-                format: float
-                description: Latitude of the vendor
-                examples: [26.312049]
-              longitude:
-                type: number
-                format: float
-                description: Longitude of the vendor
-                examples: [-36.312049]
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the vendor
+                  examples: [Atawich-Abazar]
+                latitude:
+                  type: number
+                  format: float
+                  description: Latitude of the vendor
+                  examples: [26.312049]
+                longitude:
+                  type: number
+                  format: float
+                  description: Longitude of the vendor
+                  examples: [-36.312049]
         required: true
       responses:
         '201':
