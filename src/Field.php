@@ -24,7 +24,7 @@ class Field{
      * - "required": A boolean indicating whether the field is required.
      * - "values": An array of possible values for the field. This is applicable for "enum" type.
      */
-    public function __construct($rule, $data, $model, $field_name){
+    public function __construct(array $rule, $data, $model, $field_name){
         /*
          * rule : [type, min_length, max_length, min, max, required, values]
          * type : [integer, double, string, boolean, array, object, NULL, password]
@@ -76,23 +76,23 @@ class Field{
                 throw new \Exception("Field {$this->field_name} has an invalid type", 400);
         }
     }
-    private function validateEnum(array $values){
-        if(!in_array($this->data, $values))
+    private function validateEnum(){
+        if(!in_array($this->data, $this->values))
             throw new \Exception("enum value not exists", 400);
     }
-    private function validatePassword(string $password){
+    private function validatePassword(){
         if(strlen($this->data) < $this->min_length)
             throw new \Exception("Password {$this->field_name} is too short", 400);
     }
-    private function validateString(string $data){
-        if(!is_string($data))
+    private function validateString(){
+        if(!is_string($this->data))
             throw new \Exception("Field {$this->field_name} is not a string", 400);
         if (strlen($this->data) > $this->max_length)
             throw new \Exception("Field {$this->field_name} is too long", 400);
         if (strlen($this->data) < $this->min_length)
             throw new \Exception("Field {$this->field_name} is too short", 400);
     }
-    private function validateInteger(int $data){
+    private function validateInteger(){
         if((!is_numeric($this->data) || intval($this->data) != $this->data))
             throw new \Exception("Field {$this->field_name} is not an integer", 400);
         if ($this->min && $this->data < $this->min)
@@ -100,7 +100,7 @@ class Field{
         if ($this->max && $this->data > $this->max)
             throw new \Exception("Field {$this->field_name} is too big", 400);
     }
-    private function validateDouble(float $data){
+    private function validateDouble(){
         if((!is_numeric($this->data) || doubleval($this->data) != $this->data))
             throw new \Exception("Field {$this->field_name} is not a double", 400);
         if ($this->min && $this->data < $this->min)
@@ -108,7 +108,7 @@ class Field{
         if ($this->max && $this->data > $this->max)
             throw new \Exception("Field {$this->field_name} is too big", 400);
     }
-    private function validateBoolean(bool $data){
+    private function validateBoolean(){
         if(!in_array(strtolower($this->data), ['true', 'false', '1', '0', 'yes', 'no'], true))
             throw new \Exception("Field {$this->field_name} is not a boolean", 400);
     }
