@@ -4,17 +4,11 @@ use App\Models\Biker;
 use App\Errors;
 class BikerService{
     public static function getBiker($biker_id):array{
-        $biker = Biker::getById($biker_id);
-        if ($biker == null) {
-            throw new \Exception("Biker not found", 404);
-        }
+        $biker = Biker::getById_Or404($biker_id);
         return $biker->exportData();
     }
     public static function UpdateBikerLocation($biker_id, $latitude, $longitude):array{
-        $biker = Biker::getById($biker_id);
-        if ($biker == null) {
-           throw new \Exception("Biker not found", 404);
-        }
+        $biker = Biker::getById_Or404($biker_id);
         $biker->insertData(['latitude' => $latitude, 'longitude' => $longitude]);
         $biker->save();
         return $biker->exportData();
