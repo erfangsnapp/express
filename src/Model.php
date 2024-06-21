@@ -24,6 +24,12 @@ class Model{
             return null;
         return static::makeObjectInstance($data);
     }
+    public static function getById_Or404($id):Model{
+        $data = Application::$app->db->getById(self::get_model_name(), $id);
+        if($data == null)
+            throw new \Exception(self::get_model_name() . " not found", 404);
+        return static::makeObjectInstance($data);
+    }
     public static function get($arr):?Model{
         $data = Application::$app->db->get(self::get_model_name(), $arr);
         if($data == null)
