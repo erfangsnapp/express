@@ -15,61 +15,63 @@ class MySQL extends Database{
         $this->username = $config['username'];
         $this->password = $config['password'];
         $this->dbname = $config['dbname'];
-        $this->connect(); 
     }
     public function connect():void{
         $this->conn = new mysqli($this->servername, $this->username, $this->password, $this->dbname);
         if ($this->conn->connect_error) {
-            die("Connection failed: " . $this->conn->connect_error);
+            throw new \Exception("Connection failed: " . $this->conn->connect_error);
         } 
     }
 
-    public function save($table, $data):bool{
+    public function save($table, $data):void{
         $primaryKey = $data['id'];
         unset($data['id']);
+        $data = $this->cleanDataForMySQL($data);
         $updates = [];
         foreach ($data as $key => $value) {
-            if (is_bool($value)) {
-                $value = $value ? 1 : 0;
-            }
-            $updates[] = "$key = '$value'";
+            $updates[] =  "$key = '$value'";
         }
         $set = implode(', ', $updates);
         $sql = "UPDATE $table SET $set WHERE id = $primaryKey";
-        if ($this->conn->query($sql) === TRUE) {
-            return true;
-        } else {
-            return false;
+        if ($this->conn->query($sql) === FALSE) {
+            throw new \Exception("Error in saving: " . $sql . "<br>" . $this->conn->error);
         }
     }
 
-    public function get($table, $arr, $multiple_result=false): ?array{
-        $conditions = [];
-        foreach ($arr as $key => $value) {
-            $conditions[] = "$key = '$value'";
+    public function get($table, $conditions):?array{
+        $sql_conditions = [];
+        foreach ($conditions as $key => $value) {
+            $sql_conditions[] = "$key = '$value'";
         }
-        $where = implode(' AND ', $conditions);
+        $where = implode(' AND ', $sql_conditions);
         $sql = "SELECT * FROM $table WHERE $where";
         $result = $this->conn->query($sql);
         if ($result->num_rows > 0) {
-            if ($multiple_result) {
-                $data = [];
-                while ($row = $result->fetch_assoc()) {
-                    $data[] = $row;
-                }
-                $result->free();
-                return $data;
-            } else {
                 $ans = $result->fetch_assoc();
                 $result->free(); 
                 return $ans; 
-            }
         } else {
             return null;
         }
     }
 
-    public function getById($table, $id): ?array{
+    public function getMultiple($table, $conditions):?array{
+        $sql_conditions = [];
+        foreach ($conditions as $key => $value) {
+            $sql_conditions[] = "$key = '$value'";
+        }
+        $where = implode(' AND ', $sql_conditions);
+        $sql = "SELECT * FROM $table WHERE $where";
+        $result = $this->conn->query($sql);
+        $data = [];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        $result->free();
+        return $data;
+    }
+
+    public function getById($table, $id):?array{
         $sql = "SELECT * FROM $table WHERE id = $id";
         $result = $this->conn->query($sql);
         if ($result->num_rows > 0) {
@@ -84,25 +86,17 @@ class MySQL extends Database{
     public function all($table):?array{
         $sql = "SELECT * FROM $table";
         $result = $this->conn->query($sql);
-        if ($result->num_rows > 0) {
-            $data = [];
-            while ($row = $result->fetch_assoc()) {
-                $data[] = $row;
-            }
-            $result->free();
-            return $data;
-        } else {
-            return [];
+        $data = [];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
         }
+        $result->free();
+        return $data;
     }
 
     public function create($table, $data):string{
         unset($data['id']);
-        foreach ($data as $key => $value) {
-            if (is_bool($value)) {
-                $data[$key] = $value ? 1 : 0;
-            }
-        }
+        $data = $this->cleanDataForMySQL($data);
         $columns = implode(', ', array_keys($data));
         $values = "'" . implode("', '", array_values($data)) . "'";
         $sql = "INSERT INTO $table ($columns) VALUES ($values)";
@@ -111,6 +105,15 @@ class MySQL extends Database{
         } else {
             throw new \Exception("Error: " . $sql . "<br>" . $this->conn->error);
         }  
+    }
+    private function cleanDataForMySQL($data):array{
+        $cleaned_data = $data;
+        foreach ($data as $key => $value) {
+            if (is_bool($value)) {
+                $cleaned_data[$key] = $value ? 1 : 0;
+            }
+        }
+        return $cleaned_data;
     }
 
 

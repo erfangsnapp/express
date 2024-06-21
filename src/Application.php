@@ -10,6 +10,7 @@ class Application{
     public function __construct($config){ 
         $this->router = new Router(); 
         $this->db = new MySQL($config['db']);
+        $this->db->connect();
         self::$app = $this;
     }
 }
