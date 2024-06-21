@@ -2,59 +2,47 @@
 namespace App;
 
 class Errors{
-
-    public static function InvalidInput(string $message="Invalid Input"):void{
-        header('Content-type: application/json');
-        http_response_code(400);
+    public static function BadRequest(string $message="Bad Request"):void{
         $response = [
             "message" => $message
         ];
-        echo json_encode($response);
-        die();
+        Response::JsonResponse($response, 400);
+    }
+    public static function InvalidInput(string $message="Invalid Input"):void{
+        $response = [
+            "message" => $message
+        ];
+        Response::JsonResponse($response, 400);
+
     }
     public static function Unauthorized(string $message="Unauthorized"):void{
-        header('Content-type: application/json');
-        http_response_code(401);
         $response = [
             "message" => $message
         ];
-        echo json_encode($response);
-        die();
+        Response::JsonResponse($response, 401);
     }
     public static function Forbidden(string $message="Forbidden"):void{
-        header('Content-type: application/json');
-        http_response_code(403);
         $response = [
             "message" => $message
         ];
-        echo json_encode($response);
-        die();
+        Response::JsonResponse($response, 403);
     }
     public static function NotFound(string $message="Not Found"):void{
-        header('Content-type: application/json');
-        http_response_code(404);
         $response = [
             "message" => $message
         ];
-        echo json_encode($response);
-        die();
+        Response::JsonResponse($response, 404);
     }
     public static function Conflict(string $message="Conflict"):void{
-        header('Content-type: application/json');
-        http_response_code(409);
         $response = [
             "message" => $message
         ];
-        echo json_encode($response);
-        die();
+        Response::JsonResponse($response, 409);
     }
     public static function ServerError(string $message="Server Error"):void{
-        header('Content-type: application/json');
-        http_response_code(500);
         $response = [
             "message" => $message
         ];
-        echo json_encode($response);
-        die();
+        Response::JsonResponse($response, 500);
     }
 }
