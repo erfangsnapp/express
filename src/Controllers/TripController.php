@@ -61,7 +61,7 @@ class TripController{
             return [$vendor_id, $origin_latitude, $origin_longitude, $destination_latitude, $destination_longitude];
         }
         catch(\Throwable $e){
-            Errors::BadRequest($e->getMessage());
+            Errors::BadRequest();
         }
     }
 
@@ -90,14 +90,10 @@ class TripController{
             $data = json_decode(file_get_contents('php://input'), true);
             $trip_id = $params['tripId'];
             $biker_id = $data['biker_id'];
-            $trip_id_field = new Field(Trip::$fieldRules['id'], $trip_id, Trip::class, 'id');
-            $biker_id_field = new Field(Trip::$fieldRules['biker_id'], $biker_id, Trip::class, 'biker_id');
-            $trip_id_field->validate();
-            $biker_id_field->validate();
             return [$trip_id, $biker_id];
         }
         catch(\Throwable $e){
-            Errors::InvalidInput($e->getMessage());
+            Errors::BadRequest();
         }
     }
 
@@ -132,7 +128,7 @@ class TripController{
             return [$trip_id, $status];
         }
         catch(\Throwable $e){
-            Errors::InvalidInput($e->getMessage());
+            Errors::BadRequest();
         }
     }
 
@@ -143,6 +139,12 @@ class TripController{
         catch(\Exception $e){
             if($e->getCode() == 400){
                 Errors::InvalidInput($e->getMessage());
+            }
+            else if ($e->getCode() == 409){
+                Errors::Conflict($e->getMessage());
+            }
+            else if ($e->getCode() == 404){
+                Errors::NotFound($e->getMessage());
             }
             else{
                 Errors::ServerError($e->getMessage());

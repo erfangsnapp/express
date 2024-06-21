@@ -12,11 +12,10 @@ class BikerController{
         Response::JsonResponse($serialized_response);   
     }
     private function tryToGetBikerIdInput(array $params){
-        $biker_id = $params['bikerId'];
-        if(!isset($biker_id)){
+        if(!isset($params['bikerId'])){
             Errors::BadRequest();
         }
-        return $biker_id;
+        return $params['bikerId'];
     }
     private function tryToRetrieveSerializedBiker($biker_id):array{
         try{
@@ -56,11 +55,11 @@ class BikerController{
             $updated_biker_serialized = BikerService::UpdateBikerLocation($biker_id, $latitude, $longitude);
             Response::JsonResponse($updated_biker_serialized);
         } catch (\Exception $e) {
-            if ($e->getCode() == 404) {
+            if ($e->getCode() == 404)
                 Errors::NotFound($e->getMessage());
-            } else if ($e->getCode() == 400)
+            else if ($e->getCode() == 400)
                 Errors::InvalidInput($e->getMessage());
-            else if ($e->getCode() == 500)
+            else
                 Errors::ServerError($e->getMessage());
         }
     }
@@ -87,9 +86,9 @@ class BikerController{
             $res = BikerService::createBiker($name, $latitude, $longitude);
             Response::JsonResponse($res, 201);
         } catch (\Exception $e) {
-            if ($e->getCode() == 400) {
+            if ($e->getCode() == 400)
                 Errors::InvalidInput($e->getMessage());
-            } else if ($e->getCode() == 500)
+            else
                 Errors::ServerError($e->getMessage());
         }
     }

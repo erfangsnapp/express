@@ -20,7 +20,7 @@ class VendorController{
             return $vendor_id;
         }
         catch (\Throwable $e) {
-            Errors::InvalidInput($e->getMessage());
+            Errors::BadRequest();
         }
     }
 
@@ -52,7 +52,7 @@ class VendorController{
             return [$name, $latitude, $longitude];
         }
         catch(\Throwable $e){
-            Errors::InvalidInput($e->getMessage());
+            Errors::BadRequest();
         }
     }
 
