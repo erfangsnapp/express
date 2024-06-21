@@ -15,12 +15,22 @@ class BikerController{
     }
 
     public function get(array $params){
-        try{
-            $biker_id = $this->tryToGetBikerId($params);
-            $serialized_response = BikerService::getBiker($biker_id);
-            Response::JsonResponse($serialized_response);
+        $biker_id = $this->tryToGetBikerIdInput($params);
+        $serialized_response = $this->tryToRetrieveSerializedBiker($biker_id);
+        Response::JsonResponse($serialized_response);   
+    }
+    private function tryToGetBikerIdInput(array $params){
+        $biker_id = $params['bikerId'];
+        if(!isset($biker_id)){
+            Errors::BadRequest();
         }
-        catch (\Exception $e) {
+        return $biker_id;
+    }
+    private function tryToRetrieveSerializedBiker($biker_id):array{
+        try{
+            $serialized_response = BikerService::getBiker($biker_id);
+        }
+        catch (\Exception $e){
             if($e->getCode() == 404){
                 Errors::NotFound($e->getMessage());
             }
@@ -29,13 +39,7 @@ class BikerController{
             else
                 Errors::ServerError($e->getMessage());
         }
-    }
-    private function tryToGetBikerId(array $params){
-        $biker_id = $params['bikerId'];
-        if(!isset($biker_id)){
-            Errors::BadRequest();
-        }
-        return $biker_id;
+        return $serialized_response;
     }
 
 
