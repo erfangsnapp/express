@@ -13,47 +13,12 @@ class BikerController{
             $this->put($params);
         }
     }
-    public function get(array $params){
-        try {
-            $biker_id = $params['bikerId'];
-            $id_field = new Field(Biker::$fieldRules['id'], $biker_id, Biker::class, 'id');
-            $id_field->validate();
-        }
-        catch (\Exception $e) {
-            Errors::InvalidInput($e->getMessage());
-        }
 
-        try {
-            $res = BikerService::getBiker($biker_id);
-            Response::JsonResponse($res);
-        }
-        catch (\Exception $e) {
-            if ($e->getCode() == 404) {
-                Errors::NotFound($e->getMessage());
-            }
-            else
-                Errors::ServerError($e->getMessage());
-        }
-    }
-    public function put(array $params){
-        try {
-            $biker_id = $params['bikerId'];
-            $id_field = new Field(Biker::$fieldRules['id'], $biker_id, Biker::class, 'id');
-            $data = json_decode(file_get_contents('php://input'), true);
-            $latitude = $data['latitude'];
-            $longitude = $data['longitude'];
-            $latitude_field = new Field(Biker::$fieldRules['latitude'], $latitude, Biker::class, 'latitude');
-            $longitude_field = new Field(Biker::$fieldRules['longitude'], $longitude, Biker::class, 'longitude');
-            $id_field->validate();
-            $latitude_field->validate();
-            $longitude_field->validate();
-        }
-        catch (\Exception $e) {
-            Errors::InvalidInput($e->getMessage());
-        }
+    public function get(array $params){
         try{
-            $res = BikerService::UpdateBikerLocation($biker_id, $latitude, $longitude);
-            Response::JsonResponse($res);
+            $biker_id = $this->tryToGetBikerId($params);
+            $serialized_response = BikerService::getBiker($biker_id);
+            Response::JsonResponse($serialized_response);
         }
         catch (\Exception $e) {
             if($e->getCode() == 404){
@@ -61,41 +26,78 @@ class BikerController{
             }
             else if ($e->getCode() == 400)
                 Errors::InvalidInput($e->getMessage());
-            else if($e->getCode() == 500)
+            else
+                Errors::ServerError($e->getMessage());
+        }
+    }
+    private function tryToGetBikerId(array $params){
+        $biker_id = $params['bikerId'];
+        if(!isset($biker_id)){
+            Errors::BadRequest();
+        }
+        return $biker_id;
+    }
+
+
+    public function put(array $params){
+        list($biker_id, $latitude, $longitude) = $this->tryToGetBikerLocationFromInput($params);
+        $this->tryToUpdateBikerLocation($biker_id, $latitude, $longitude);
+    }
+    private function tryToGetBikerLocationFromInput($params){
+        try{
+            $biker_id = $params['bikerId'];
+            $data = json_decode(file_get_contents('php://input'), true);
+            $latitude = $data['latitude'];
+            $longitude = $data['longitude'];
+        }
+        catch (\Throwable $e){
+            Errors::BadRequest();
+        }
+        return [$biker_id, $latitude, $longitude];
+    }
+    private function tryToUpdateBikerLocation($biker_id, $latitude, $longitude):void{
+        try {
+            $updated_biker_serialized = BikerService::UpdateBikerLocation($biker_id, $latitude, $longitude);
+            Response::JsonResponse($updated_biker_serialized);
+        } catch (\Exception $e) {
+            if ($e->getCode() == 404) {
+                Errors::NotFound($e->getMessage());
+            } else if ($e->getCode() == 400)
+                Errors::InvalidInput($e->getMessage());
+            else if ($e->getCode() == 500)
                 Errors::ServerError($e->getMessage());
         }
     }
 
-    public function create(){
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            try{
-                $data = json_decode(file_get_contents('php://input'), true);
-                $name = $data['name'];
-                $latitude = $data['latitude'];
-                $longitude = $data['longitude'];
-                $name_field = new Field(Biker::$fieldRules['name'], $name, Biker::class, 'name');
-                $latitude_field = new Field(Biker::$fieldRules['latitude'], $latitude, Biker::class, 'latitude');
-                $longitude_field = new Field(Biker::$fieldRules['longitude'], $longitude, Biker::class, 'longitude');
-                $name_field->validate();
-                $latitude_field->validate();
-                $longitude_field->validate();
-            }
-            catch(\Throwable $e){
-                Errors::InvalidInput($e->getMessage());
-            }
-            try {
-                $res = BikerService::createBiker($name, $latitude, $longitude);
-                Response::JsonResponse($res, 201);
-            }
-            catch (\Exception $e) {
-                if($e->getCode() == 400){
-                    Errors::InvalidInput($e->getMessage());
-                }
-                else{
-                    Errors::ServerError($e->getMessage());
-                }
-            }
 
+    public function create(){
+        if($_SERVER['REQUEST_METHOD'] !== 'POST'){
+            Errors::MethodNotAllowed();
+        }
+        list($name, $latitude, $longitude) = $this->tryToGetBikerFromInput($_POST);
+        $this->tryToCreateBiker($name, $latitude, $longitude);
+    }
+    private function tryToGetBikerFromInput($params){
+        try{
+            $data = json_decode(file_get_contents('php://input'), true);
+            $name = $data['name'];
+            $latitude = $data['latitude'];
+            $longitude = $data['longitude'];
+        }
+        catch (\Throwable $e){
+            Errors::BadRequest();
+        }
+        return [$name, $latitude, $longitude];
+    }
+    private function tryToCreateBiker($name, $latitude, $longitude):void{
+        try {
+            $res = BikerService::createBiker($name, $latitude, $longitude);
+            Response::JsonResponse($res, 201);
+        } catch (\Exception $e) {
+            if ($e->getCode() == 400) {
+                Errors::InvalidInput($e->getMessage());
+            } else if ($e->getCode() == 500)
+                Errors::ServerError($e->getMessage());
         }
     }
 }

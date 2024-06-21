@@ -45,4 +45,10 @@ class Errors{
         ];
         Response::JsonResponse($response, 500);
     }
+    public static function MethodNotAllowed(string $message="Method Not Allowed"):void{
+        $response = [
+            "message" => $message
+        ];
+        Response::JsonResponse($response, 405);
+    }
 }
