@@ -6,15 +6,7 @@ use App\Field;
 use App\Errors;
 use App\Services\BikerService;
 class BikerController{
-    public function index(array $params):void{
-        if ($_SERVER['REQUEST_METHOD'] === 'GET'){
-            $this->get($params);
-        } else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-            $this->put($params);
-        }
-    }
-
-    public function get(array $params){
+    public function RetrieveBikerAction(array $params){
         $biker_id = $this->tryToGetBikerIdInput($params);
         $serialized_response = $this->tryToRetrieveSerializedBiker($biker_id);
         Response::JsonResponse($serialized_response);   
@@ -43,7 +35,7 @@ class BikerController{
     }
 
 
-    public function put(array $params){
+    public function UpdateBikerLocationAction(array $params){
         list($biker_id, $latitude, $longitude) = $this->tryToGetBikerLocationFromInput($params);
         $this->tryToUpdateBikerLocation($biker_id, $latitude, $longitude);
     }
@@ -74,10 +66,7 @@ class BikerController{
     }
 
 
-    public function create(){
-        if($_SERVER['REQUEST_METHOD'] !== 'POST'){
-            Errors::MethodNotAllowed();
-        }
+    public function CreateBikerAction(){
         list($name, $latitude, $longitude) = $this->tryToGetBikerFromInput($_POST);
         $this->tryToCreateBiker($name, $latitude, $longitude);
     }

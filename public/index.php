@@ -7,6 +7,7 @@ use App\Controllers\TripController;
 use App\Controllers\VendorController;
 use App\Application;
 
+//Setting up error logging
 ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 ini_set('error_log', 'php://stderr');
@@ -23,18 +24,20 @@ $config = [
 $app = new Application($config);
 $router = $app->router ;
 
-/////////////////
-$router->setRoute('/health',HealthController::class, 'index');
-/////////////////
+//Routes : actions are a function in the controller
+$router->setRoute('/health',HealthController::class, 'GET', 'index');
 
-$router->setRoute('/api/v1/biker/{bikerId}', BikerController::class, 'index');
-$router->setRoute('/api/v1/biker', BikerController::class, 'create');
-$router->setRoute('/api/v1/trip/{tripId}', TripController::class, 'get');
-$router->setRoute('/api/v1/trip', TripController::class, 'create');
-$router->setRoute('/api/v1/trip/{tripId}/assign', TripController::class, 'assign');
-$router->setRoute('/api/v1/trip/{tripId}/status', TripController::class, 'status');
-$router->setRoute('/api/v1/vendor', VendorController::class, 'create');
-$router->setRoute('/api/v1/vendor/{vendorId}', VendorController::class, 'get');
+$router->setRoute('/api/v1/biker/{bikerId}', BikerController::class, 'GET', 'RetrieveBikerAction');
+$router->setRoute('/api/v1/biker/{bikerId}', BikerController::class, 'PUT', 'UpdateBikerLocationAction');
+$router->setRoute('/api/v1/biker', BikerController::class, 'POST', 'CreateBikerAction');
+
+$router->setRoute('/api/v1/trip/{tripId}', TripController::class, 'GET', 'RetrieveTripAction');
+$router->setRoute('/api/v1/trip', TripController::class, 'POST', 'CreateTripAction');
+$router->setRoute('/api/v1/trip/{tripId}/assign', TripController::class, 'POST', 'AssignBikerAction');
+$router->setRoute('/api/v1/trip/{tripId}/status', TripController::class, 'PUT', 'UpdateStatusAction');
+
+$router->setRoute('/api/v1/vendor', VendorController::class, 'POST', 'CreateVendorAction');
+$router->setRoute('/api/v1/vendor/{vendorId}', VendorController::class, 'GET', 'RetrieveVendorAction');
 
 $router->run();
 

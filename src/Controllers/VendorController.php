@@ -8,12 +8,10 @@ use App\Errors;
 use App\Field;
 
 class VendorController{
-    public function get($params):void{
-        if($_SERVER['REQUEST_METHOD'] == 'GET') {
-            $vendor_id = $this->tryToGetVendorId($params);
-            $serialized_vendor = $this->tryToGetVendor($vendor_id);
-            Response::JsonResponse($serialized_vendor);
-        }
+    public function RetrieveVendorAction($params):void{
+        $vendor_id = $this->tryToGetVendorId($params);
+        $serialized_vendor = $this->tryToGetVendor($vendor_id);
+        Response::JsonResponse($serialized_vendor);
     }
 
     private function tryToGetVendorId($params) {
@@ -39,12 +37,10 @@ class VendorController{
         }
     }
 
-    public function create():void{
-        if($_SERVER['REQUEST_METHOD'] == 'POST'){
-            list($name, $latitude, $longitude) = $this->tryToGetVendorDataFromInput();
-            $serialized_created_vendor = $this->tryToCreateVendor($name, $latitude, $longitude);
-            Response::JsonResponse($serialized_created_vendor, 201);
-        }
+    public function CreateVendorAction():void{
+        list($name, $latitude, $longitude) = $this->tryToGetVendorDataFromInput();
+        $serialized_created_vendor = $this->tryToCreateVendor($name, $latitude, $longitude);
+        Response::JsonResponse($serialized_created_vendor, 201);
     }
 
     private function tryToGetVendorDataFromInput() {

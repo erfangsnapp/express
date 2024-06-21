@@ -7,12 +7,10 @@ use App\Models\Trip;
 use App\Field;
 
 class TripController{
-    public function get($params):void{
-        if($_SERVER['REQUEST_METHOD'] == 'GET') {
-            $trip_id = $this->tryToGetTripId($params);
-            $serialized_trip = $this->tryToRetrieveTrip($trip_id);
-            Response::JsonResponse($serialized_trip);
-        }
+    public function RetrieveTripAction($params):void{
+        $trip_id = $this->tryToGetTripId($params);
+        $serialized_trip = $this->tryToRetrieveTrip($trip_id);
+        Response::JsonResponse($serialized_trip);
     }
     private function tryToGetTripId($params) {
         try{
@@ -35,23 +33,21 @@ class TripController{
         }
     }
 
-    public function create():void{
-        if($_SERVER['REQUEST_METHOD'] == 'POST'){
-            list($vendor_id,
-                $origin_latitude,
-                $origin_longitude,
-                $destination_latitude,
-                $destination_longitude
-                ) = $this->tryToGetTripDataFromInput();
-            $serialized_created_trip = $this->tryToCreateTrip(
-                $vendor_id,
-                $origin_latitude,
-                $origin_longitude,
-                $destination_latitude,
-                $destination_longitude
-            );
-            Response::JsonResponse($serialized_created_trip, 201);
-        }
+    public function CreateTripAction():void{
+        list($vendor_id,
+            $origin_latitude,
+            $origin_longitude,
+            $destination_latitude,
+            $destination_longitude
+            ) = $this->tryToGetTripDataFromInput();
+        $serialized_created_trip = $this->tryToCreateTrip(
+            $vendor_id,
+            $origin_latitude,
+            $origin_longitude,
+            $destination_latitude,
+            $destination_longitude
+        );
+        Response::JsonResponse($serialized_created_trip, 201);
     }
 
     private function tryToGetTripDataFromInput() {
@@ -83,12 +79,10 @@ class TripController{
         }
     }
 
-    public function assign($params):void{
-        if($_SERVER['REQUEST_METHOD'] == 'POST'){
-            list($trip_id, $biker_id) = $this->tryToGetAssignDataFromInput($params);
-            $serialized_assigned_trip = $this->tryToAssignTrip($trip_id, $biker_id);
-            Response::JsonResponse($serialized_assigned_trip);
-        }
+    public function AssignBikerAction($params):void{
+        list($trip_id, $biker_id) = $this->tryToGetAssignDataFromInput($params);
+        $serialized_assigned_trip = $this->tryToAssignTrip($trip_id, $biker_id);
+        Response::JsonResponse($serialized_assigned_trip);
     }
 
     private function tryToGetAssignDataFromInput($params) {
@@ -124,12 +118,10 @@ class TripController{
         }
     }
 
-    public function status($params):void{
-        if($_SERVER['REQUEST_METHOD'] == 'PUT'){
-            list($trip_id, $status) = $this->tryToGetStatusDataFromInput($params);
-            $serialized_updated_trip = $this->tryToUpdateStatus($trip_id, $status);
-            Response::JsonResponse($serialized_updated_trip);
-        }
+    public function UpdateStatusAction($params):void{
+        list($trip_id, $status) = $this->tryToGetStatusDataFromInput($params);
+        $serialized_updated_trip = $this->tryToUpdateStatus($trip_id, $status);
+        Response::JsonResponse($serialized_updated_trip);
     }
 
     private function tryToGetStatusDataFromInput($params) {
