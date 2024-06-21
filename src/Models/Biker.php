@@ -15,7 +15,7 @@ class Biker extends Model{
         'name' => ['type' => 'string', 'min_length' => 1, 'max_length' => 255, 'required' => true],
         'latitude' => ['type' => 'double', 'min' => -90, 'max' => 90, 'required' => true],
         'longitude' => ['type' => 'double', 'min' => -180, 'max' => 180, 'required' => true],
-        'updated_at' => ['type' => 'string', 'min_length' => 1, 'max_length' => 255, 'required' => true]
+        'updated_at' => ['type' => 'string', 'min_length' => 0, 'max_length' => 255, 'required' => false]
     ];
     public function get_location():array{
         return ['latitude' => $this->latitude, 'longitude' => $this->longitude];

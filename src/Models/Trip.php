@@ -22,7 +22,7 @@ class Trip extends Model{
         'destination_latitude' => ['type' => 'double', 'min' => -90, 'max' => 90, 'required' => true],
         'destination_longitude' => ['type' => 'double', 'min' => -180, 'max' => 180, 'required' => true],
         'status' => ['type' => 'enum', 'values'=>['requested','assigned','acked','picked','delivered','canceled'], 'required' => false],
-        'created_at' => ['type' => 'string', 'min_length' => 1, 'max_length' => 255, 'required' => false]
+        'created_at' => ['type' => 'string', 'min_length' => 0, 'max_length' => 255, 'required' => false]
     ];
     public function get_status():string{
         return $this->status;

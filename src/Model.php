@@ -5,55 +5,41 @@ class Model{
     protected $id;
 
     public static array $fieldRules;
-
-    public function __construct($data = []){
-        if($data != [])
-            $this->insertData($data, static::$fieldRules); 
-    }
     
     private static function get_model_name():string{
         $str = get_called_class();
         return substr($str, strrpos($str, '\\') + 1);
     }
     public static function all():array{
-        $data = Application::$app->db->all(self::get_model_name());
-        $result = [];
-        foreach ($data as $object){
-            $entry = new static(); 
-            $entry->loadData($object, static::$fieldRules);
-            $result[] = $entry;
+        $rows_data = Application::$app->db->all(self::get_model_name());
+        $objects_list = [];
+        foreach ($rows_data as $data){
+            $objects_list[] = static::makeObjectInstance($data);
         }
-        return $result; 
+        return $objects_list;
     }
     public static function getById($id):?Model{
         $data = Application::$app->db->getById(self::get_model_name(), $id);
-        if(empty($data)){
+        if($data == null)
+            return null;
+        return static::makeObjectInstance($data);
+    }
+    public static function get($arr):?Model{
+        $data = Application::$app->db->get(self::get_model_name(), $arr);
+        if($data == null)
+            return null;
+        return static::makeObjectInstance($data);
+    }
+    public static function getMultiple($arr):?array{
+        $object_data_list = Application::$app->db->getMultiple(self::get_model_name(), $arr);
+        if(empty($object_data_list)){
             return null;
         }
-        $entry = new static(); 
-        $entry->loadData($data, static::$fieldRules); 
-        return $entry; 
-    }
-    public static function get($arr, $multiple_result=false):?array{
-        $data = Application::$app->db->get(self::get_model_name(), $arr, $multiple_result);
-        if(empty($data)){
-            return null;
+        $objects_list = [];
+        foreach ($object_data_list as $object_data){
+            $objects_list[] = static::makeObjectInstance($object_data);
         }
-        if(!$multiple_result){
-            $entry = new static(); 
-            $entry->loadData($data, static::$fieldRules); 
-            return [$entry];
-        }
-        $result = []; 
-        foreach ($data as $object){
-            $entry = new static(); 
-            $entry->loadData($object, static::$fieldRules);
-            $result[] = $entry;
-        }
-        return $result; 
-    }
-    public function read($key){
-        return $this->$key;
+        return $objects_list;
     }
     public function save():void{
         Application::$app->db->save(self::get_model_name(), $this->exportData());
@@ -62,28 +48,36 @@ class Model{
         $id = Application::$app->db->create(self::get_model_name(), $this->exportData());
         $this->id = $id; 
     }
-    public function loadData($data, $rules):void{
+    public function insertData($data):void{
+        if(array_key_exists("password", $data)){
+            $data['password'] = $this->hashPassword($data['password']);
+        }
+        $this->loadData($data);
+    }
+    public function loadData($data):void {
+        $this->validateModelData($data);
         foreach ($data as $key => $value) {
-            if($key != 'id'){
-                $field = new Field($rules[$key], $value, self::get_model_name(), $key);
-                $field->validate();
-            }
             $this->$key = $value;
         }
     }
-    public function insertData($data, $rules):void{
-        foreach ($data as $key => $value) {
-            if($key != 'id'){
-                $field = new Field($rules[$key], $value, self::get_model_name(), $key);
-                $field->validate();
-            }
-            if($rules[$key]['type'] == 'password')
-                $this->$key = password_hash($value, PASSWORD_DEFAULT);
-            else
-                $this->$key = $value;
-        }
-    }
+
     public function exportData():?array{
         return get_object_vars($this);
+    }
+    private function validateModelData($data):void{
+        foreach (static::$fieldRules as $field_key => $field_rule){
+            $value = $data[$field_key] ?? $this->$field_key ?? null;
+            $field = new Field($field_rule, $value, self::get_model_name(), $field_key);
+            $field->validate();
+        }
+    }
+    private function hashPassword($plain_password):string{
+        return password_hash($plain_password, PASSWORD_DEFAULT);
+    }
+
+    public static function makeObjectInstance($data):Model{
+        $entry = new static();
+        $entry->loadData($data);
+        return $entry;
     }
 }
